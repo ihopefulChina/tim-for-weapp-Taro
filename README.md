@@ -1,22 +1,13 @@
----
-title: '封装腾讯即时通讯 for 小程序'
-date: 2021-07-22 14:15:47
-tags: [JavaScript,微信小程序]
-published: true
-hideInList: false
-feature: /post-images/IZbWBmM7v.png
-isTop: false
----
 适用小程序(Taro)接入腾讯即时通讯。
 
-<!-- more -->
+文档地址：[https://ihopefulchina.github.io/IZbWBmM7v/](https://ihopefulchina.github.io/IZbWBmM7v/)
 
 ### 参考资料
-1. [SDK API（Web & 小程序）](https://cloud.tencent.com/document/product/269/37411)
-2. [微信小程序原生接入腾讯云im](https://blog.csdn.net/weixin_42311676/article/details/105866973?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.add_param_isCf&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.add_param_isCf)
-3. [原生JS集成腾讯IM实时聊天/实时音视频](https://blog.csdn.net/weixin_44622984/article/details/109626266)
-4. [微信小程序利用腾讯云IM即时通讯发送文字+表情开发）](https://blog.csdn.net/qq_29789057/article/details/89396550?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_title-1&spm=1001.2101.3001.4242)
 
+1. [SDK API（Web & 小程序）](https://cloud.tencent.com/document/product/269/37411)
+2. [微信小程序原生接入腾讯云 im](https://blog.csdn.net/weixin_42311676/article/details/105866973?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.add_param_isCf&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.add_param_isCf)
+3. [原生 JS 集成腾讯 IM 实时聊天/实时音视频](https://blog.csdn.net/weixin_44622984/article/details/109626266)
+4. [微信小程序利用腾讯云 IM 即时通讯发送文字+表情开发）](https://blog.csdn.net/qq_29789057/article/details/89396550?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_title-1&spm=1001.2101.3001.4242)
 
 ```
 import Taro from "@tarojs/taro";
@@ -211,9 +202,10 @@ function deleteConversation_TIM(ID) {
 export { iminit_TIM, loginIm_TIM, initRecentContactList, deleteConversation_TIM }
 ```
 
-
 ### 获取列表
-hooks方式
+
+hooks 方式
+
 ```
 const [list, setList] = useState([] as any);
  useEffect(() => {
@@ -228,65 +220,65 @@ const [list, setList] = useState([] as any);
       }
     });
   }, []);
-  ```
+```
 
-  ### 获取聊天会话
+### 获取聊天会话
 
-  ```
-   // 发送信息
-  const [sendMsg, setSendMsg] = useState("" as any);
-  // im实时聊天数据
-  const [toView, setToView] = useState("" as any);
-  // 用于续拉，分页续拉时需传入该字段。
-  const [nextReqMessageID, setNextReqMessageID] = useState("" as any);
-  // 表示是否已经拉完所有消息。
-  const [isCompleted, setIsCompleted] = useState("" as any);
+```
+ // 发送信息
+const [sendMsg, setSendMsg] = useState("" as any);
+// im实时聊天数据
+const [toView, setToView] = useState("" as any);
+// 用于续拉，分页续拉时需传入该字段。
+const [nextReqMessageID, setNextReqMessageID] = useState("" as any);
+// 表示是否已经拉完所有消息。
+const [isCompleted, setIsCompleted] = useState("" as any);
 
-  // 消息列表
-  const [myMessages, setmyMessages] = useState([] as any);
-  const [more_text, setmore_text] = useState("");
-  const [is_lock, setis_lock] = useState(true);
+// 消息列表
+const [myMessages, setmyMessages] = useState([] as any);
+const [more_text, setmore_text] = useState("");
+const [is_lock, setis_lock] = useState(true);
 
-  // 语音操作
-  const [title, settitle] = useState("正在录音");
-  const [isRecording, setisRecording] = useState(false);
-  // 拉取会话列表
-  const getMsgList = () => {
-    const param = {
-        //sendId 为对方id
-      conversationID: "C2C" + sendId,
-      count: 15,
-      nextReqMessageID
-    };
-    const promise = timStore.tim.getMessageList(param);
-
-    promise
-      .then(imResponse => {
-        const messageList = imResponse.data.messageList; // 消息列表。
-        // 处理自定义的消息
-        messageList.forEach(event => {
-          if (event.type === "TIMCustomElem") {
-            if (typeof event.payload.data === "string" && event.payload.data) {
-              const new_data = JSON.parse(event.payload.data);
-              event.payload.data = new_data;
-            }
-          }
-        });
-        const newNextReqMessageID = imResponse.data.nextReqMessageID; // 用于续拉，分页续拉时需传入该字段。
-        const newIsCompleted = imResponse.data.isCompleted; // 表示是否已经拉完所有消息。
-        // 将某会话下所有未读消息已读上报
-        setMessageRead();
-        setmyMessages(messageList);
-        setIsCompleted(newIsCompleted);
-        setNextReqMessageID(newNextReqMessageID);
-        setmore_text(newIsCompleted ? "没有更多了" : "下拉查看更多历史信息");
-        scrollToBottom(messageList.length - 1);
-      })
-      .catch(imError => {
-        // console.warn("getConversationList error:", imError); // 获取会话列表失败的相关信息
-      });
+// 语音操作
+const [title, settitle] = useState("正在录音");
+const [isRecording, setisRecording] = useState(false);
+// 拉取会话列表
+const getMsgList = () => {
+  const param = {
+      //sendId 为对方id
+    conversationID: "C2C" + sendId,
+    count: 15,
+    nextReqMessageID
   };
-  ```
+  const promise = timStore.tim.getMessageList(param);
+
+  promise
+    .then(imResponse => {
+      const messageList = imResponse.data.messageList; // 消息列表。
+      // 处理自定义的消息
+      messageList.forEach(event => {
+        if (event.type === "TIMCustomElem") {
+          if (typeof event.payload.data === "string" && event.payload.data) {
+            const new_data = JSON.parse(event.payload.data);
+            event.payload.data = new_data;
+          }
+        }
+      });
+      const newNextReqMessageID = imResponse.data.nextReqMessageID; // 用于续拉，分页续拉时需传入该字段。
+      const newIsCompleted = imResponse.data.isCompleted; // 表示是否已经拉完所有消息。
+      // 将某会话下所有未读消息已读上报
+      setMessageRead();
+      setmyMessages(messageList);
+      setIsCompleted(newIsCompleted);
+      setNextReqMessageID(newNextReqMessageID);
+      setmore_text(newIsCompleted ? "没有更多了" : "下拉查看更多历史信息");
+      scrollToBottom(messageList.length - 1);
+    })
+    .catch(imError => {
+      // console.warn("getConversationList error:", imError); // 获取会话列表失败的相关信息
+    });
+};
+```
 
 ### 已读回执
 
@@ -316,38 +308,38 @@ const [list, setList] = useState([] as any);
       }
     }
   });
-  ```
+```
 
-  ### 接受到新消息
+### 接受到新消息
 
-  ```
-   // @ts-ignore
-    // eslint-disable-next-line no-undef
-    wx.event.on("testFunc", (ele, newMsgForm) => {
-      if (newMsgForm === `C2C${sendId}` && timStore.isDetail) {
-        const newmsg = ele[`C2C${sendId}`];
-        let oldMss = myMessages;
-        if (newmsg) {
-          newmsg.forEach(event => {
-            if (event.type === "TIMCustomElem") {
-              if (
-                typeof event.payload.data === "string" &&
-                event.payload.data
-              ) {
-                const new_data = JSON.parse(event.payload.data);
-                event.payload.data = new_data;
-              }
+```
+ // @ts-ignore
+  // eslint-disable-next-line no-undef
+  wx.event.on("testFunc", (ele, newMsgForm) => {
+    if (newMsgForm === `C2C${sendId}` && timStore.isDetail) {
+      const newmsg = ele[`C2C${sendId}`];
+      let oldMss = myMessages;
+      if (newmsg) {
+        newmsg.forEach(event => {
+          if (event.type === "TIMCustomElem") {
+            if (
+              typeof event.payload.data === "string" &&
+              event.payload.data
+            ) {
+              const new_data = JSON.parse(event.payload.data);
+              event.payload.data = new_data;
             }
-            if (!event.isRead) {
-              oldMss = [...oldMss, ...newmsg];
-            }
-          });
-          setmyMessages(oldMss);
-          scrollToBottom(oldMss.length - 1);
-        }
-        setMessageRead();
+          }
+          if (!event.isRead) {
+            oldMss = [...oldMss, ...newmsg];
+          }
+        });
+        setmyMessages(oldMss);
+        scrollToBottom(oldMss.length - 1);
       }
-    });
+      setMessageRead();
+    }
+  });
 ```
 
 ### 设置已读上报
@@ -414,47 +406,48 @@ const setMessageRead = () => {
   };
 ```
 
- ### 发送语音图片和视频消息
-   ```
-    // 发送语音消息
-  const bindAudioMessage = res => {
-    // 4. 创建消息实例，接口返回的实例可以上屏
-    const message = timStore.tim.createAudioMessage({
-      to: sendId, // 消息的接收方
-      conversationType: TIM.TYPES.CONV_C2C,
-      payload: {
-        file: res
-      }
-    });
-    sendMessageFun(message, "voice");
-  };
-  // 发送视频
-  const createVideoMessage = res => {
-    // 2. 创建消息实例，接口返回的实例可以上屏
-    const message = timStore.tim.createVideoMessage({
-      to: sendId,
-      conversationType: TIM.TYPES.CONV_C2C,
-      payload: {
-        file: res
-      }
-    });
-    // 3. 发送消息
-    sendMessageFun(message, "video");
-  };
-  // 发送图片
-  const createImageMessage = res => {
-    const message = timStore.tim.createImageMessage({
-      to: sendId,
-      conversationType: TIM.TYPES.CONV_C2C,
-      payload: {
-        file: res
-      },
-      onProgress(event) {
-        setProgress(event);
-      }
-    });
-    sendMessageFun(message, "image");
-  };
+### 发送语音图片和视频消息
+
+```
+ // 发送语音消息
+const bindAudioMessage = res => {
+ // 4. 创建消息实例，接口返回的实例可以上屏
+ const message = timStore.tim.createAudioMessage({
+   to: sendId, // 消息的接收方
+   conversationType: TIM.TYPES.CONV_C2C,
+   payload: {
+     file: res
+   }
+ });
+ sendMessageFun(message, "voice");
+};
+// 发送视频
+const createVideoMessage = res => {
+ // 2. 创建消息实例，接口返回的实例可以上屏
+ const message = timStore.tim.createVideoMessage({
+   to: sendId,
+   conversationType: TIM.TYPES.CONV_C2C,
+   payload: {
+     file: res
+   }
+ });
+ // 3. 发送消息
+ sendMessageFun(message, "video");
+};
+// 发送图片
+const createImageMessage = res => {
+ const message = timStore.tim.createImageMessage({
+   to: sendId,
+   conversationType: TIM.TYPES.CONV_C2C,
+   payload: {
+     file: res
+   },
+   onProgress(event) {
+     setProgress(event);
+   }
+ });
+ sendMessageFun(message, "image");
+};
 ```
 
 ### 发送消息封装
@@ -476,4 +469,3 @@ const sendMessageFun = (message, type) => {
     });
   };
 ```
-
